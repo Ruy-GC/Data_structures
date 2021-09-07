@@ -31,12 +31,6 @@
 *.out
 *.app
 
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
+#vs code
+/.vscode
 
-# Local History for Visual Studio Code
-.history/
