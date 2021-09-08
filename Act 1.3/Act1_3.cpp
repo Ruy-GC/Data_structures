@@ -12,7 +12,7 @@ void readfile(vector <string> &data){
     ifstream file(filename);
 
     if(!file.is_open()){
-        cout<<"Could not pen the file "<<filename<<endl;
+        cout<<"Could not open the file "<<filename<<endl;
     }else{
         while(getline(file,line)){
             data.push_back(line);
