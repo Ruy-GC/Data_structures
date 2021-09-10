@@ -5,16 +5,16 @@ using namespace std;
 template <class T> class Node {
     private:
         T data; // The object information
-        Node* prev; //element below
+        Node* down; //element below
     public:
-        Node(T new_data,Node* prev_node){
+        Node(T new_data,Node* down_node){
             this->data = new_data;
-            this->prev = prev_node;
+            this->down = down_node;
         }
 
         Node(T new_data){
             this->data = new_data;
-            this->prev = NULL;
+            this->down = NULL;
         }
 
         void set_data(T new_data){
@@ -25,22 +25,24 @@ template <class T> class Node {
             return this->data;
         }
 
-        void set_prev(Node *prev_node){
-            this->prev = prev_node;
+        void set_down(Node *down_node){
+            this->down = down_node;
         }
 
-        Node* get_prev(){
-            return this->prev;
+        Node* get_down(){
+            return this->down;
         }
    
 };
 
 template <class T> class CustomStack{
-    Node<T> *top;
+    Node<T> *head;
+    int n;
 
     public:
         CustomStack(){
-            top = NULL;
+            head = NULL;
+            n = 0;
         }
 
         ~CustomStack(){
@@ -48,36 +50,45 @@ template <class T> class CustomStack{
         }
 
         void push(T data){
-            if(top == NULL){
-                this->top = new Node<T>(data); //Create new node of type T
-            }else{
-                Node<T>* temp = new Node<T>(data);
-                temp->set_prev(top);
-                this->top = temp;
-            }
+            Node<T>* node = new Node<T>(data,this->head);
+            this->head = node;
+            n++;
         }
 
-        void pop(){
-            if(top == NULL){
-                return;
-            }else{
-                Node<T>* temp = top->get_prev();
-                top = temp;
+        T pop(){
+            T data;
+            if(this->head){
+                Node<T>* node = this->head;
+                data = this->top();
+                this->head = this->head->get_down();
+                delete node;
+                n--;
             }
+
+            return data;
+        }
+
+        bool isEmpty(){
+            return this->head;
         }
 
         void print_list(){
-            Node<T>* current_node = this->top;
+            Node<T>* current_node = this->head;
             
+            cout<<"Pila: ";
             while (current_node != NULL){
                 cout <<current_node->get_data()<< "-> ";
-                current_node = current_node->get_prev();
+                current_node = current_node->get_down();
             }
             cout << endl;
         }
 
-        int Top(){
-            return this->top->get_data();
+        T top(){
+            T data;
+            if(this->head){
+                data = this->head->get_data();
+            }
+            return data;
         }
 
 };
@@ -90,13 +101,24 @@ int main(){
     test.push(1);
     test.push(2);
     test.push(3);
+    test.push(4);
+    test.push(5);
+    test.push(6);
+    test.push(7);
+
 
     test.print_list();
+    cout<<"Top: "<<test.top()<<endl;
+    cout<<"Deleted: "<<test.pop()<<endl;
 
-    test.pop();
+    if(test.isEmpty()){
+        cout<<"hay datos en la pila"<<endl;
+    }else{
+        cout<<"la pila está vacia"<<endl;
+    }
 
     test.print_list();
-    cout<<"Top "<<test.Top()<<endl;
+    cout<<"Top: "<<test.top()<<endl;
 
     return 0;
 }
