@@ -1,6 +1,10 @@
-// Programa que calcula la sumatoria de 1 hasta n mediante 3 metodos distintos
-// Autor: Ruy Guzmán Camacho A01639912
-// Creación: 31/08/2021
+/*
+Programa que ordena y busca elementos de arreglos de enteros mediante 
+3 algoritmos de ordenamiento y 2 algoritmos de busqueda 
+
+Autor: Ruy Guzmán Camacho A01639912
+Creación: 31/08/2021
+*/
 
 #include <iostream>
 #include <vector>
@@ -11,6 +15,7 @@ using namespace std;
 
 //Función para imprimir vectores
 void printVector(vector<int> numeros){
+
     for(int i = 0; i <numeros.size(); i++){
         if(i+1 < numeros.size()){
             cout<<numeros[i] <<", ";
@@ -60,6 +65,7 @@ void ordenaBurbuja(vector<int> &numeros){
 
 //funcion para juntar dos subarrays 
 void merge(vector <int> &numeros, int l, int m, int r){
+
     int n1 = m-l+1;
     int n2 = r-m;
     vector<int> L;
@@ -106,6 +112,7 @@ void merge(vector <int> &numeros, int l, int m, int r){
 //Entrada: Vector de enteros ,indice izquierdo e indice derecho
 //Salida: ninguna, el vector se ordena por referencia 
 void ordenaMerge(vector<int> &numeros , int l, int r){
+
     int m = (l+r)/2;
 
     if(l < r){
@@ -115,10 +122,11 @@ void ordenaMerge(vector<int> &numeros , int l, int r){
     }
 }
 
-//Complejidad: O(1) en el mejor de los caos, O(n) en el peor
+//Complejidad: O(1) en el mejor de los casos, O(n) en el peor
 //Entrada: Vector de enteros, valor a buscar
-//Salida: indice del elemento en el arrego, -1 si no existe
+//Salida: indice del elemento en el arreglo, -1 si no existe
 int busqSecuencial(vector<int> numeros, int k){
+
     for(int i = 0; i < numeros.size();i++){
         if (numeros[i] == k){
             return i;
@@ -130,8 +138,9 @@ int busqSecuencial(vector<int> numeros, int k){
 
 //Complejidad: O(1) en el mejor de los caos, O(log n) en el peor
 //Entrada: Vector de enteros ordenados, valor a buscar
-//Salida: indice del elemento en el arrego, -1 si no existe
+//Salida: indice del elemento en el arreglo, -1 si no existec
 int busqBinaria(vector<int> numeros,int k){
+
     int l = 0;
     int r = numeros.size()-1;
 
@@ -150,10 +159,19 @@ int busqBinaria(vector<int> numeros,int k){
 }
 
 int main(){
+
     int n = 0;
     int busqueda = 0;
-    cout<<"INgrese el tamaño del arreglo a generar: ";
-    cin>>n;
+
+    do{
+        cout<<"Ingrese el tamaño del arreglo a generar: ";
+        cin>>n;
+
+        if(cin.fail()){
+            cin.clear();
+            fflush(stdin);
+        }
+    }while(n <= 0);
 
     vector<int>numeros(n,0);
     srand(time(0));
@@ -161,46 +179,58 @@ int main(){
     for(int i = 0; i <4; i++){
 
         generate(numeros.begin(),numeros.end(),[]() {
-            return (rand() % 100)+1;
+            int aux = (rand() % 10)+1;
+            return (rand() % 1000)+1+aux;
         });
 
-        cout<<"\nSin ordenar: ";
+        cout<<"Caso de prueba "<< i+1<<endl;
+        cout<<"Sin ordenar: ";
         printVector(numeros);
-
 
         int j = 0;
         while(j < 5){
+
             //asigna el valor de numeros a un vector temporal
             //esto se realiza para mandar un vector desordenado a las funciones
-            
             vector <int> temp = numeros;
-
             switch (j){
                 case 0:
+
                     cout<<"Ordena Intercambio: ";
                     ordenaIntercambio(temp);
                     printVector(temp);
                     break;
+
                 case 1:
-                    cout<<"Ordena Burnuja: ";
+
+                    cout<<"Ordena Burbuja: ";
                     ordenaBurbuja(temp);
                     printVector(temp);
                     break;
+
                 case 2:
+
                     cout<<"Ordena Merge: ";
                     ordenaMerge(temp,0,temp.size()-1);
                     printVector(temp);
                     break;
+
                 case 3:
+
                     cout<<"\nObjetivo de busqueda secuencial: ";
                     cin>>busqueda;
-                    cout<<"Indice: "<<busqSecuencial(numeros,busqueda)<<endl;
+                    //se realiza la busqueda en el vector sin ordenar
+                    cout<<"Indice en vector desordenado: "<<busqSecuencial(numeros,busqueda)<<endl;
                     break;
+
                 case 4:
+
                     cout<<"\nObjetivo de busqueda binaria: ";
                     cin>>busqueda;
+                    //se ordena el vector
                     ordenaMerge(temp,0,temp.size()-1);
-                    cout<<"Indice: "<<busqSecuencial(temp,busqueda)<<endl;
+                    //se envia el vector ordenado a la busqueda binaria
+                    cout<<"Indice en vector ordenado: "<<busqBinaria(temp,busqueda)<<endl;
                     break;
             }
             j++;

@@ -5,6 +5,7 @@
         "xiosbase": "cpp",
         "xlocale": "cpp",
         "iostream": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "xutility": "cpp"
     }
 }
