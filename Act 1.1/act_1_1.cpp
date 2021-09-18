@@ -57,6 +57,5 @@ int main(){
         cout<<"Metodo Recursivo: " <<sumaRecursiva(numeros[i])<<endl;
         cout<<"Metodo Matematico: "<<sumaDirecta(numeros[i])<<endl<<endl;
     }
-      
     return 0;
 }
