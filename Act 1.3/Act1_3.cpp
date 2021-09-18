@@ -461,11 +461,17 @@ void imprimirRegistros(vector<Log> logs, int i1, int i2)
 
     ofstream file("resultados.txt");
 
-    for (int i = i2; i > i1; i--) {
-        cout << logs[i].getFullLog() << endl;
-        file << logs[i].getFullLog() << endl;
-        count++;
+    if(i1 == -1){
+        file << "" << endl;
+    }else{
+        for (int i = i2; i > i1; i--) {
+            cout << logs[i].getFullLog() << endl;
+            file << logs[i].getFullLog() << endl;
+            count++;
+        }
     }
+
+    
     cout << "Se encontraron " << count << " registros" << endl;
     cout << "Datos guardados en resultados.txt"<<endl;
 }
