@@ -132,6 +132,8 @@ int main() {
   test.push(8,2);
   test.push(1,1);
   test.push(5,0);
+  test.push(5,2);
+  test.push(10,0);
 
   test.print_list();
   
