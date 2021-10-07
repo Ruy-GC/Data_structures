@@ -92,39 +92,69 @@ template <class T> class BinarySearchTree {
                 }
             }
         }
-        
+        void preOrder(Node<T> *node){
+          	if(node){
+                cout << node->get_key() << " "; 
+				this->preOrder(node->get_left()); 
+				this->preOrder(node->get_right());
+         	}
+        }
+
         void inOrder(Node<T> *node){
           	if(node){
 				this->inOrder(node->get_left()); 
-				cout << node->get_key() << endl; 
+				cout << node->get_key() << " "; 
 				this->inOrder(node->get_right());
          	}
         }
-         
-          
+
+        void postOrder(Node<T> *node){
+            if(node){
+                this->postOrder(node->get_left()); 
+				this->postOrder(node->get_right());
+                cout << node->get_key() << " "; 
+            }else{
+                return;
+            }
+        } 
+        
+        void byLevel(){
+            queue<Node<T>*> q; 
+            if(!this->root) return;
+            q.push(root);
+
+            while(!q.empty()){
+                Node<T> *temp = q.front();
+                cout<<temp->get_key()<<" ";
+                q.pop();
+                q.push(temp->get_left());
+                q.push(temp->get_right());
+            }
+        }
+
         Node<T>* get_root(){
             return this->root;
         }  
-        
-        void levelOrder(){
-            queue<Node<T>*> cola; 
-            if(!this->root) return;
-            
-            while(!cola.empty()){
-                if
-            }
-        }
 };
 
 
 int main() {
     BinarySearchTree<int> a;
-    a.add(0,6);
     a.add(0,10);
+    a.add(0,12);
     a.add(0,5);
+    a.add(0,7);
+    a.add(0,11);
     a.add(0,20);
     a.add(0,3);
-    a.inOrder(a.get_root()); 
+    a.inOrder(a.get_root());
+    cout<<endl;
+    a.preOrder(a.get_root());
+    cout<<endl;
+    a.postOrder(a.get_root()); 
+    cout<<endl;
+    a.byLevel(); 
+    //a.print();
     
     // a.add(0,90);
     // a.add(0,20);
