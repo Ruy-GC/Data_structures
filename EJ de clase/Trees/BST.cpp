@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue> 
+#include <algorithm>  
 
 using namespace std;
 
@@ -132,6 +133,14 @@ template <class T> class BinarySearchTree {
             }
         }
 
+        int height(Node<T> *node){
+            if(!node) return 0;
+            int leftH = height(node->get_left());
+            int rightH = height(node->get_right());
+
+            return max(leftH, rightH)+1;
+        }
+
         Node<T>* get_root(){
             return this->root;
         }  
@@ -147,6 +156,8 @@ int main() {
     a.add(0,11);
     a.add(0,20);
     a.add(0,3);
+
+    cout<<a.height(a.get_root())<<endl;
     a.inOrder(a.get_root());
     cout<<endl;
     a.preOrder(a.get_root());
@@ -154,8 +165,6 @@ int main() {
     a.postOrder(a.get_root()); 
     cout<<endl;
     a.byLevel(); 
-    //a.print();
     
-    // a.add(0,90);
-    // a.add(0,20);
+
 }
