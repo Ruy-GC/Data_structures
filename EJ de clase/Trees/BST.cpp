@@ -58,8 +58,9 @@ template <class T> class Node {
           return key;
         }
 };
+
 template <class T> class BinarySearchTree {
-    
+
     private: 
         Node<T> *root; 
     
@@ -141,6 +142,37 @@ template <class T> class BinarySearchTree {
             return max(leftH, rightH)+1;
         }
 
+        Node<T>* search(Node<T> *Node,int key){
+            if(Node == NULL){
+                return NULL;
+            }else if(Node->get_key() == key){
+                return Node;
+            }else if (Node->get_key() > key){
+                return search(Node->get_left(),n,key);
+            }else{
+                return search(Node->get_right(),n,key);
+            }
+        }
+
+        void deleteNode(int key){
+            Node<T> *node; 
+            node->set_key(key);
+
+            Node<T> *temp = this->search(node,NULL);
+
+            if(!temp){
+                return;
+            }
+
+            if(!temp->get_left() && !temp->get_right()){
+
+            }else if(!temp->get_left() || !temp->get_right()){
+
+            }else{
+
+            }
+        }
+
         Node<T>* get_root(){
             return this->root;
         }  
@@ -149,12 +181,12 @@ template <class T> class BinarySearchTree {
 
 int main() {
     BinarySearchTree<int> a;
-    a.add(0,10);
-    a.add(0,12);
-    a.add(0,5);
-    a.add(0,7);
-    a.add(0,11);
-    a.add(0,20);
+    a.add(10,10);
+    a.add(5,12);
+    a.add(6,5);
+    a.add(8,7);
+    a.add(2,11);
+    a.add(1,20);
     a.add(0,3);
 
     cout<<a.height(a.get_root())<<endl;
@@ -165,6 +197,12 @@ int main() {
     a.postOrder(a.get_root()); 
     cout<<endl;
     a.byLevel(); 
-    
+
+    //Node<int> *temp = a.search(a.get_root(),0,11);
+    /*if(!temp){
+        cout<<"El nodo no existe"<<endl;
+    }else{
+        cout<<"Se encontró el nodo con valor "<<temp->get_data()<<endl;
+    }*/
 
 }
