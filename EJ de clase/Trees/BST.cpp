@@ -5,18 +5,17 @@
 using namespace std;
 
 template <class T> class Node {
-    private:
+    public:
         T data; // The object information
         int key;
         Node* left; // Pointer to the next node element
         Node* right;
         
-    public:
-        Node(){
-            this->data = NULL;
-            this->left = NULL;
-			this->right = NULL;
-			this->key = 0;
+        Node(T new_data, int key, Node<T>* left, Node<T>* right){
+            this->data = new_data;
+            this->key = key;
+            this->left = left;
+            this->right = right;
         }
         
         Node(T new_data, int key){
@@ -25,96 +24,70 @@ template <class T> class Node {
             this->left = NULL;
 			this->right = NULL;
         }
-        
-        void set_right(Node* right){
-            this->right = right;
-        }
-
-        void set_left(Node* left){
-            this->left = left;
-        }
-
-        Node* get_left(){
-          	return this->left;
-        }    
-
-        Node* get_right(){
-          	return this->right;
-        }       
-        
-        void set_data(T new_data){
-            this->data = new_data;
-        }
-
-        T get_data(){
-            return this->data;
-        }
-
-        void set_key(int key) {
-          this->key = key;
-        }
-
-        int get_key() {
-          return key;
-        }
 };
 
 template <class T> class BinarySearchTree {
-
-    private: 
+    public:
         Node<T> *root; 
     
-    public:
         BinarySearchTree<T>(){
             this->root = NULL; 
         } 
 
-        void add(T data, int key){
+        ~BinarySearchTree(){
+        }
+
+        void insert(T data, int key){
             Node<T> *currentNode = this->root;
             Node<T> *to_add = new Node<T>(data, key);
+
             if(!this->root) { 
                 this->root = to_add;
                 return;
             }
-            while(1){
-                if(key >= currentNode->get_key()){
-                    if(currentNode->get_right()){
-                        currentNode =currentNode->get_right();
+
+            while(true){
+                //checks if key is higher or lower than root
+                if(key >= currentNode->key){
+                    //if node exists, goes to next node
+                    if(currentNode->right){
+                        currentNode =currentNode->right;
                     } else {
-                        currentNode->set_right(to_add); 
+                        currentNode->right = to_add; 
                         return;
                     }
                 } else { 
-                    if(currentNode->get_left()){
-                        currentNode = currentNode->get_left();
+                    if(currentNode->left){
+                        currentNode = currentNode->left;
                     } else {
-                        currentNode->set_left(to_add); 
+                        currentNode->left = to_add; 
                         return;
                     }
                 }
             }
         }
+
         void preOrder(Node<T> *node){
           	if(node){
-                cout << node->get_key() << " "; 
-				this->preOrder(node->get_left()); 
-				this->preOrder(node->get_right());
+                cout << node->key << " "; 
+				this->preOrder(node->left); 
+				this->preOrder(node->right);
          	}
         }
 
         void inOrder(Node<T> *node){
           	if(node){
-				this->inOrder(node->get_left()); 
-				cout << node->get_key() << " "; 
-				this->inOrder(node->get_right());
+				this->inOrder(node->left); 
+				cout << node->key << " "; 
+				this->inOrder(node->right);
          	}
         }
 
         void postOrder(Node<T> *node){
             if(node){
-                this->postOrder(node->get_left()); 
-				this->postOrder(node->get_right());
-                cout << node->get_key() << " "; 
+                this->postOrder(node->left); 
+				this->postOrder(node->right);
+                cout << node->key << " "; 
             }else{
                 return;
             }
@@ -127,17 +100,17 @@ template <class T> class BinarySearchTree {
 
             while(!q.empty()){
                 Node<T> *temp = q.front();
-                cout<<temp->get_key()<<" ";
-                q.pop();
-                q.push(temp->get_left());
-                q.push(temp->get_right());
+                cout<<temp->key<<" ";
+                if(temp->left)q.push(temp->left);
+                if(temp->right)q.push(temp->right);  
+                q.pop();           
             }
         }
 
         int height(Node<T> *node){
             if(!node) return 0;
-            int leftH = height(node->get_left());
-            int rightH = height(node->get_right());
+            int leftH = height(node->left);
+            int rightH = height(node->right);
 
             return max(leftH, rightH)+1;
         }
@@ -145,64 +118,88 @@ template <class T> class BinarySearchTree {
         Node<T>* search(Node<T> *Node,int key){
             if(Node == NULL){
                 return NULL;
-            }else if(Node->get_key() == key){
+            }else if(Node->key == key){
                 return Node;
-            }else if (Node->get_key() > key){
-                return search(Node->get_left(),n,key);
+            }else if (Node->key > key){
+                return search(Node->left,key);
             }else{
-                return search(Node->get_right(),n,key);
+                return search(Node->right,key);
             }
         }
 
-        void deleteNode(int key){
-            Node<T> *node; 
-            node->set_key(key);
-
-            Node<T> *temp = this->search(node,NULL);
-
-            if(!temp){
-                return;
+         Node<T>* minimum_element(Node<T>* current_node){
+            if(!current_node->left){
+                return current_node;
             }
-
-            if(!temp->get_left() && !temp->get_right()){
-
-            }else if(!temp->get_left() || !temp->get_right()){
-
-            }else{
-
-            }
+            return minimum_element(current_node->left);
         }
 
-        Node<T>* get_root(){
-            return this->root;
-        }  
+        Node<T>* deleteNode(Node<T> *current_node,int key_delete){
+            if(!current_node) return NULL;
+
+            current_node = this->search(current_node,key_delete);
+
+            if(!current_node->left && !current_node->right){
+                delete current_node;
+                current_node = NULL;
+            }else if(!current_node->left){
+                Node<T> *right_node = current_node->right;
+                delete current_node;
+                current_node = right_node;
+            }else if(!current_node->right){
+                Node<T> *left_node = current_node->left;
+                delete current_node;
+                current_node = left_node;
+            }else{
+                Node<T> *successor = this->minimum_element(current_node->right);
+                Node<T> *new_node_minimum = new Node<T>(
+                    successor->data,
+                    successor->key,
+                    current_node->left,
+                    current_node->right
+                );
+                if(current_node == this->root){
+                    this->root = new_node_minimum;
+                }
+
+                delete current_node;
+
+                current_node = new_node_minimum;
+                current_node->right =this->deleteNode(current_node->right,successor->key);
+            }
+            return current_node;
+        }
 };
 
 
 int main() {
     BinarySearchTree<int> a;
-    a.add(10,10);
-    a.add(5,12);
-    a.add(6,5);
-    a.add(8,7);
-    a.add(2,11);
-    a.add(1,20);
-    a.add(0,3);
+    a.insert(10,10);
+    a.insert(5,12);
+    a.insert(6,5);
+    a.insert(8,7);
+    a.insert(2,11);
+    a.insert(1,20);
+    a.insert(0,3);
 
-    cout<<a.height(a.get_root())<<endl;
-    a.inOrder(a.get_root());
+    cout<<a.height(a.root)<<endl;
+    a.inOrder(a.root);
     cout<<endl;
-    a.preOrder(a.get_root());
+    a.preOrder(a.root);
     cout<<endl;
-    a.postOrder(a.get_root()); 
+    a.postOrder(a.root); 
     cout<<endl;
     a.byLevel(); 
 
-    //Node<int> *temp = a.search(a.get_root(),0,11);
-    /*if(!temp){
-        cout<<"El nodo no existe"<<endl;
+    //a.deleteNode(a.root,3);
+    cout<<endl;
+    if(!a.root){
+        cout<<"pp";
     }else{
-        cout<<"Se encontró el nodo con valor "<<temp->get_data()<<endl;
-    }*/
+        cout<<a.root->key;
+    }
+    cout<<endl;
 
+    a.inOrder(a.root);
+    return 0;
 }
