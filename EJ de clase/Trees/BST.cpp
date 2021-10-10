@@ -121,13 +121,16 @@ template <class T> class BinarySearchTree {
             }else if(Node->key == key){
                 return Node;
             }else if (Node->key > key){
+                //if searched key is less than Node goes left recursively
                 return search(Node->left,key);
             }else{
+                //if searched key is more than Node goes right recursively
                 return search(Node->right,key);
             }
         }
 
          Node<T>* minimum_element(Node<T>* current_node){
+            //gets most left item
             if(!current_node->left){
                 return current_node;
             }
@@ -135,39 +138,57 @@ template <class T> class BinarySearchTree {
         }
 
         Node<T>* deleteNode(Node<T> *current_node,int key_delete){
+
             if(!current_node) return NULL;
-
-            current_node = this->search(current_node,key_delete);
-
-            if(!current_node->left && !current_node->right){
-                delete current_node;
-                current_node = NULL;
-            }else if(!current_node->left){
-                Node<T> *right_node = current_node->right;
-                delete current_node;
-                current_node = right_node;
-            }else if(!current_node->right){
-                Node<T> *left_node = current_node->left;
-                delete current_node;
-                current_node = left_node;
-            }else{
-                Node<T> *successor = this->minimum_element(current_node->right);
-                Node<T> *new_node_minimum = new Node<T>(
-                    successor->data,
-                    successor->key,
-                    current_node->left,
-                    current_node->right
-                );
-                if(current_node == this->root){
-                    this->root = new_node_minimum;
-                }
-
-                delete current_node;
-
-                current_node = new_node_minimum;
-                current_node->right =this->deleteNode(current_node->right,successor->key);
+            // First search for the element to delete
+            else if(key_delete < current_node->key){
+                current_node->left = this->deleteNode(current_node->left, key_delete);
             }
-            return current_node;
+            else if(key_delete > current_node->key){
+                current_node->right = this->deleteNode(current_node->right, key_delete);
+            }
+            else{
+                if(!current_node->left &&!current_node->right){
+                    // If the node is a leaf we just delete it
+                    delete current_node;
+                    current_node = NULL;
+                }
+                else if(!current_node->left){
+                    // If the node doesn't have left node, 
+                    // then just replace the current node with the right root
+                    Node<T> * right_node = current_node->right;
+                    delete current_node;
+                    current_node = right_node;
+                }
+                else if(!current_node->right){
+                    // If the node doesn't have right node, 
+                    // then just replace the current node with the left root
+                    Node<T> * left_node = current_node->left;
+                    delete current_node;
+                    current_node = left_node;   
+                }
+                else{
+                    // If the node to delete has both nodes
+                    // We search the minimum element in the right side
+                    Node<T>* successor  = this->minimum_element(current_node->right);
+                    // Replace the data with the minimum element (also the key)
+                    Node<T>* new_node_minimum = new Node<T>(
+                        successor ->data, successor->key, 
+                        current_node->left, current_node->right);
+
+                    if(current_node == this->root){
+                        this->root = new_node_minimum;
+                    }
+
+                    // Delete the current node
+                    delete current_node;
+
+                    // Now we recursively delete the minimum element in the right subtree
+                    current_node = new_node_minimum;
+                    current_node->right = this->deleteNode(current_node->right, successor->key);
+                }
+            }
+            return current_node;    
         }
 };
 
@@ -182,7 +203,10 @@ int main() {
     a.insert(1,20);
     a.insert(0,3);
 
+    //height of tree
     cout<<a.height(a.root)<<endl;
+
+    //show tree
     a.inOrder(a.root);
     cout<<endl;
     a.preOrder(a.root);
@@ -191,15 +215,8 @@ int main() {
     cout<<endl;
     a.byLevel(); 
 
-    //a.deleteNode(a.root,3);
-    cout<<endl;
-    if(!a.root){
-        cout<<"pp";
-    }else{
-        cout<<a.root->key;
-    }
-    cout<<endl;
-
+    //erase node
+    a.deleteNode(a.root,3);
     a.inOrder(a.root);
     return 0;
 }
