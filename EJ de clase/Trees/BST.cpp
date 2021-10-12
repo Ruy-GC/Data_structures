@@ -129,7 +129,7 @@ template <class T> class BinarySearchTree {
             }
         }
 
-         Node<T>* minimum_element(Node<T>* current_node){
+        Node<T>* minimum_element(Node<T>* current_node){
             //gets most left item
             if(!current_node->left){
                 return current_node;
@@ -217,6 +217,7 @@ int main() {
 
     //erase node
     a.deleteNode(a.root,3);
+    cout<<endl;
     a.inOrder(a.root);
     return 0;
 }
