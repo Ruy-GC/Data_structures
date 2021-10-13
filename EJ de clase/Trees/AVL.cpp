@@ -41,20 +41,30 @@ template <class T> class BinarySearchTree {
             if(current_node == NULL){
                 Node<T> *new_node = new Node<T>(data,key);
                 current_node = new_node;
-                return;
+
             }else if(current_node->key > key){
                 insert(current_node->left,data,key);
             }else{
                 insert(current_node->right,data,key);
             }
-        }
 
-        void preOrder(Node<T> *node){
-          	if(node){
-                cout << node->key << " "; 
-				this->preOrder(node->left); 
-				this->preOrder(node->right);
-         	}
+            int balance = balanceF(current_node);
+
+            if(balance > 1 && key < current_node->left->key){
+                current_node = rightRotate(current_node);
+            }
+            if(balance < -1 && key > current_node->right->key){
+                current_node = leftRotate(current_node);
+            }
+            if(balance > 1 && key > current_node->left->key){
+                current_node->left = leftRotate(current_node->left);
+                current_node =rightRotate(current_node);
+            }
+            if(balance < -1 && key < current_node->right->key){
+                current_node->right = leftRotate(current_node->right);
+                current_node = leftRotate(current_node);
+            }
+            
         }
 
         void inOrder(Node<T> *node){
@@ -63,38 +73,6 @@ template <class T> class BinarySearchTree {
 				cout << node->key << " "; 
 				this->inOrder(node->right);
          	}
-        }
-
-        void postOrder(Node<T> *node){
-            if(node){
-                this->postOrder(node->left); 
-				this->postOrder(node->right);
-                cout << node->key << " "; 
-            }else{
-                return;
-            }
-        } 
-        
-        void byLevel(){
-            queue<Node<T>*> q; 
-            if(!this->root) return;
-            q.push(root);
-
-            while(!q.empty()){
-                Node<T> *temp = q.front();
-                cout<<temp->key<<" ";
-                if(temp->left)q.push(temp->left);
-                if(temp->right)q.push(temp->right);  
-                q.pop();           
-            }
-        }
-
-        int height(Node<T> *node){
-            if(!node) return 0;
-            int leftH = height(node->left);
-            int rightH = height(node->right);
-
-            return max(leftH, rightH)+1;
         }
 
         Node<T>* search(Node<T> *Node,int key){
@@ -172,34 +150,86 @@ template <class T> class BinarySearchTree {
             }
             return current_node;    
         }
+
+        int height(Node<T> *node){
+            if(!node) return 0;
+            int leftH = height(node->left);
+            int rightH = height(node->right);
+
+            return max(leftH, rightH)+1;
+        }
+
+        int balanceF(Node<T> *node){
+            if(!node) return 0;
+            return height(node->left) - height(node->right);
+        }
+
+        Node<T> *leftRotate(Node<T> *n1){
+            Node<T> *n2 = n1->right;
+            Node<T> *temp = n2->left;
+
+            n2->left = n1;
+            n1->right = temp;
+
+            return n2;
+        }
+
+        Node<T> *rightRotate(Node<T> *n1){
+            Node<T> *n2 = n1->left;
+            Node<T> *temp = n2->right;
+
+            n2->right = n1;
+            n1->left = temp;
+
+            return n2;
+        }
+    void showTree(Node<T> *tree, int count){
+        if (tree == NULL){
+            return;
+        }else{
+            showTree(tree->right, count +1);
+            for(int i =0;i < count; i++){
+                cout<<"   ";
+            }
+            cout<<tree->key<<endl;
+            showTree(tree->left, count +1);
+        }
+    }
 };
 
 
 int main() {
     BinarySearchTree<int> a;
-    a.insert(a.root,10,10);
-    a.insert(a.root,5,12);
-    a.insert(a.root,6,5);
-    a.insert(a.root,8,7);
-    a.insert(a.root,2,11);
-    a.insert(a.root,1,20);
+    a.insert(a.root,0,10);
+    a.insert(a.root,0,12);
+    a.insert(a.root,0,5);
+    a.insert(a.root,0,7);
+    a.insert(a.root,0,11);
+    a.insert(a.root,0,20);
     a.insert(a.root,0,3);
+    a.insert(a.root,0,21);
+    a.insert(a.root,0,22);
+    a.insert(a.root,0,1);
+    a.insert(a.root,0,5);
+    a.insert(a.root,0,8);
+    a.insert(a.root,0,40);
+    a.insert(a.root,0,41);
+    a.insert(a.root,0,42);
+        a.insert(a.root,0,23);
+            a.insert(a.root,0,24);
 
-    //height of tree
-    cout<<a.height(a.root)<<endl;
 
-    //show tree
+
+
+
+
+
+
     a.inOrder(a.root);
-    cout<<endl;
-    a.preOrder(a.root);
-    cout<<endl;
-    a.postOrder(a.root); 
-    cout<<endl;
-    a.byLevel(); 
+    cout<<"\n";
+    cout<<a.balanceF(a.root)<<endl;
+    a.showTree(a.root,0);
 
-    //erase node
-    a.deleteNode(a.root,3);
-    cout<<endl;
-    a.inOrder(a.root);
+    cout<<"\n";
     return 0;
 }
