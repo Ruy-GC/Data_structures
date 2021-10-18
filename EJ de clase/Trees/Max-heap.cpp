@@ -40,6 +40,41 @@ template <class T> class MaxHeapTree {
             }
         }
         
+        void pop(int key){
+            for(int i = 0; i < tree.size(); i++){
+              if(tree[i]->key == key){
+                tree.erase(tree.begin() + i);
+                i = tree.size();
+              }
+            }
+
+            int i = tree.size()-1;
+
+            for(int x = 0; x < tree.size(); x++){
+              if(tree[parent(i)]->key < tree[i]->key){
+                swap( tree ,i, parent(i));
+              }
+              i --; 
+            }
+
+            /*while (i != 0 && tree[parent(i)]->key < tree[i]->key){
+                swap( tree ,i, parent(i));
+                i = parent(i);
+            }*/
+
+        }
+
+        void popMax(){
+            if(tree.size() == 0) 
+              return;
+            else if(tree.size() == 1){
+              tree.erase(tree.begin());
+              return;
+            }else{
+              pop(tree[0]->key);
+            }
+        }
+
         void printTree(){
             for(int i = 0; i < tree.size(); i++){
               cout<<tree[i]->key<<" ";
@@ -75,13 +110,24 @@ template <class T> class MaxHeapTree {
 };
 
 int main() {
-    MaxHeapTree<int> tree;
-    tree.push(2,30);
-    tree.push(2,50); 
-    tree.push(2,10); 
-    tree.push(2,20);         
-    tree.push(2,25);         
-    tree.push(2,11);         
-    tree.push(2,12);      
-    tree.printTree();
+    MaxHeapTree<int> maxh;
+    maxh.push(2,30);
+    maxh.push(2,50); 
+    maxh.push(2,10); 
+    maxh.push(2,20);         
+    maxh.push(2,25);         
+    maxh.push(2,11);         
+    maxh.push(2,12);      
+    maxh.printTree();
+    maxh.popMax(); 
+    maxh.printTree();
+    maxh.push(2,50); 
+    maxh.printTree();
+    maxh.pop(20); 
+    maxh.printTree();
+    maxh.push(2,20); 
+    maxh.printTree();
+
+     
+
 }
