@@ -56,12 +56,6 @@ template <class T> class MaxHeapTree {
               }
               i --; 
             }
-
-            /*while (i != 0 && tree[parent(i)]->key < tree[i]->key){
-                swap( tree ,i, parent(i));
-                i = parent(i);
-            }*/
-
         }
 
         void popMax(){
@@ -127,7 +121,6 @@ int main() {
     maxh.printTree();
     maxh.push(2,20); 
     maxh.printTree();
-
-     
-
+    maxh.push(2,35); 
+    maxh.printTree();
 }

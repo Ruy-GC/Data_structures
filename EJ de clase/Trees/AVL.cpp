@@ -89,14 +89,6 @@ template <class T> class BinarySearchTree {
             }
         }
 
-        Node<T>* minimum_element(Node<T>* current_node){
-            //gets most left item
-            if(!current_node->left){
-                return current_node;
-            }
-            return minimum_element(current_node->left);
-        }
-
         int height(Node<T> *node){
             if(!node) return 0;
             int leftH = height(node->left);
