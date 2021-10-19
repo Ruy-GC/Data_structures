@@ -48,20 +48,26 @@ template <class T> class BinarySearchTree {
                 insert(current_node->right,data,key);
             }
 
-            int balance = balanceF(current_node);
+            rotation(current_node);
+            
+        }
 
-            if(balance > 1 && key < current_node->left->key){
+        void rotation(Node<T> *&current_node){
+            int balance = balanceF(current_node);
+            
+            if (balance > 1 &&balanceF(current_node->left) >= 0)
                 current_node = rightRotate(current_node);
-            }
-            if(balance < -1 && key > current_node->right->key){
-                current_node = leftRotate(current_node);
-            }
-            if(balance > 1 && key > current_node->left->key){
+            // Left Right Case
+            if (balance > 1 && balanceF(current_node->left) < 0){
                 current_node->left = leftRotate(current_node->left);
-                current_node =rightRotate(current_node);
-            }
-            if(balance < -1 && key < current_node->right->key){
-                current_node->right = leftRotate(current_node->right);
+                current_node = rightRotate(current_node);
+            }  
+            // Right Right Case
+            if (balance < -1 &&balanceF(current_node->right) <= 0)
+                current_node = leftRotate(current_node);
+            // Right Left Case
+            if (balance < -1 && balanceF(current_node->right) > 0){
+                current_node->right = rightRotate(current_node->right);
                 current_node = leftRotate(current_node);
             }
             
@@ -133,6 +139,69 @@ template <class T> class BinarySearchTree {
             showTree(tree->left, count +1);
         }
     }
+
+            Node<T>* minimum_element(Node<T>* current_node){
+            //gets most left item
+            if(!current_node->left){
+                return current_node;
+            }
+            return minimum_element(current_node->left);
+        }
+
+        Node<T>* deleteNode(Node<T> *&current_node,int key_delete){
+
+            if(!current_node) return NULL;
+            // First search for the element to delete
+            else if(key_delete < current_node->key){
+                current_node->left = this->deleteNode(current_node->left, key_delete);
+            }
+            else if(key_delete > current_node->key){
+                current_node->right = this->deleteNode(current_node->right, key_delete);
+            }
+            else{
+                if(!current_node->left &&!current_node->right){
+                    // If the node is a leaf we just delete it
+                    delete current_node;
+                    current_node = NULL;
+                }
+                else if(!current_node->left){
+                    // If the node doesn't have left node, 
+                    // then just replace the current node with the right root
+                    Node<T> * right_node = current_node->right;
+                    delete current_node;
+                    current_node = right_node;
+                }
+                else if(!current_node->right){
+                    // If the node doesn't have right node, 
+                    // then just replace the current node with the left root
+                    Node<T> * left_node = current_node->left;
+                    delete current_node;
+                    current_node = left_node;   
+                }
+                else{
+                    // If the node to delete has both nodes
+                    // We search the minimum element in the right side
+                    Node<T>* successor  = this->minimum_element(current_node->right);
+                    // Replace the data with the minimum element (also the key)
+                    Node<T>* new_node_minimum = new Node<T>(
+                        successor ->data, successor->key, 
+                        current_node->left, current_node->right);
+
+                    if(current_node == this->root){
+                        this->root = new_node_minimum;
+                    }
+
+                    // Delete the current node
+                    delete current_node;
+
+                    // Now we recursively delete the minimum element in the right subtree
+                    current_node = new_node_minimum;
+                    current_node->right = this->deleteNode(current_node->right, successor->key);
+                }
+            }
+            rotation(current_node);
+            return current_node;    
+        }
 };
 
 
@@ -142,19 +211,23 @@ int main() {
     a.insert(a.root,0,12);
     a.insert(a.root,0,5);
     a.insert(a.root,0,7);
-    a.insert(a.root,0,11);
     a.insert(a.root,0,20);
-    a.insert(a.root,0,3);
+    a.insert(a.root,0,4);
     a.insert(a.root,0,1);
-    a.insert(a.root,0,8);
-
+    a.insert(a.root,0,21);
+    a.insert(a.root,0,13);
    
 
     a.inOrder(a.root);
     cout<<"\n";
     cout<<a.balanceF(a.root)<<endl;
     a.showTree(a.root,0);
+    a.deleteNode(a.root,7);
+    a.deleteNode(a.root,5);
+    a.deleteNode(a.root,1);
 
-    cout<<"\n";
+    cout<<"\n\n";
+    a.showTree(a.root,0);
+
     return 0;
 }
