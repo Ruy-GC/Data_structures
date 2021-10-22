@@ -1,3 +1,10 @@
+/*
+Programa que implementa las funcion de un arbol avl
+
+Autor: Ruy Guzmán Camacho A01639912
+Entrega: 22/10/2021
+*/
+
 #include <iostream>
 #include <queue> 
 #include <algorithm>  
@@ -127,7 +134,7 @@ template <class T> class BinarySearchTree {
 
             return n2;
         }
-
+        
         void showTree(Node<T> *tree, int count){
             if (tree == NULL){
                 return;
@@ -205,28 +212,9 @@ template <class T> class BinarySearchTree {
         }
 };
 
+int main(){
 
-int main() {
-    BinarySearchTree<int> a;
-    a.insert(a.root,0,4);
-    a.insert(a.root,0,5);
-    a.insert(a.root,0,6);
-    a.insert(a.root,0,7);
-    a.insert(a.root,0,8);
-    a.insert(a.root,0,9);
 
-   
-
-    a.inOrder(a.root);
-    cout<<"\n";
-    cout<<a.balanceF(a.root)<<endl;
-    a.showTree(a.root,0);
-    /*a.deleteNode(a.root,11);
-    a.deleteNode(a.root,4);
-    a.deleteNode(a.root,17);
-
-    cout<<"\n\n";
-    a.showTree(a.root,0);*/
 
     return 0;
 }

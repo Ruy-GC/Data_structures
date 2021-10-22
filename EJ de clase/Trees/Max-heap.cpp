@@ -40,7 +40,7 @@ template <class T> class MaxHeapTree {
             }
         }
         
-        void pop(int key){
+        void popNode(int key){
             for(int i = 0; i < tree.size(); i++){
               if(tree[i]->key == key){
                 tree.erase(tree.begin() + i);
@@ -58,14 +58,14 @@ template <class T> class MaxHeapTree {
             }
         }
 
-        void popMax(){
+        void pop(){
             if(tree.size() == 0) 
               return;
             else if(tree.size() == 1){
               tree.erase(tree.begin());
               return;
             }else{
-              pop(tree[0]->key);
+              popNode(tree[0]->key);
             }
         }
 
@@ -112,15 +112,14 @@ int main() {
     maxh.push(2,25);         
     maxh.push(2,11);         
     maxh.push(2,12);      
-    maxh.printTree();
-    maxh.popMax(); 
-    maxh.printTree();
+    //maxh.printTree();
+    maxh.pop(); 
+    //maxh.printTree();
     maxh.push(2,50); 
-    maxh.printTree();
-    maxh.pop(20); 
-    maxh.printTree();
-    maxh.push(2,20); 
-    maxh.printTree();
+    //maxh.printTree();
+   // maxh.printTree();
     maxh.push(2,35); 
+    maxh.pop();
+    maxh.push(2,24);  
     maxh.printTree();
 }
