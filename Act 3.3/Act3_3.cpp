@@ -13,9 +13,9 @@ using namespace std;
 
 template <class T> class Node {
     public:
-        T data; // The object information
+        T data; 
         int key;
-        Node* left; // Pointer to the next node element
+        Node* left;
         Node* right;
         
         Node(T new_data, int key, Node<T>* left, Node<T>* right){
@@ -33,17 +33,18 @@ template <class T> class Node {
         }
 };
 
-template <class T> class BinarySearchTree {
+template <class T> class AVLTree {
     public:
         Node<T> *root; 
     
-        BinarySearchTree<T>(){
+        AVLTree<T>(){
             this->root = NULL; 
         } 
 
-        ~BinarySearchTree(){
+        ~AVLTree(){
         }
 
+        //O(log n)
         void insert(Node<T>*&current_node,T data, int key){
             if(current_node == NULL){
                 Node<T> *new_node = new Node<T>(data,key);
@@ -55,39 +56,51 @@ template <class T> class BinarySearchTree {
                 insert(current_node->right,data,key);
             }
 
+            //AVL properties
             rotation(current_node);
             
         }
 
+        //AVL properties for insert function
         void rotation(Node<T> *&current_node){
             int balance = balanceF(current_node);
-            
-            if (balance > 1 &&balanceF(current_node->left) >= 0)
-                current_node = rightRotate(current_node);
-            // Left Right Case
-            if (balance > 1 && balanceF(current_node->left) < 0){
-                current_node->left = leftRotate(current_node->left);
-                current_node = rightRotate(current_node);
-            }  
-            // Right Right Case
-            if (balance < -1 &&balanceF(current_node->right) <= 0)
-                current_node = leftRotate(current_node);
-            // Right Left Case
-            if (balance < -1 && balanceF(current_node->right) > 0){
-                current_node->right = rightRotate(current_node->right);
-                current_node = leftRotate(current_node);
+
+            if(balance == 2 && balanceF(current_node->left) == 1){
+                current_node = LLrotate(current_node);
+            }else if(balance == 2 && balanceF(current_node->left) == -1){
+                current_node = LRrotate(current_node);
+            }else if(balance == -2 && balanceF(current_node->right) == -1){
+                current_node = RRrotate(current_node);
+            }else if(balance == -2 && balanceF(current_node->right) == 1){
+                current_node = RLrotate(current_node);
+            }      
+        }
+
+        //AVL properties for delete function
+        void rotationDelete(Node<T> *&current_node){
+            int balance = balanceF(current_node);
+            //case 1A
+            if(balance == 2 && balanceF(current_node->left) == 1){
+                current_node = LLrotate(current_node);
+            }else if(balance == 2 && balanceF(current_node->left) == -1){
+                //case 1B
+                current_node = LRrotate(current_node);
+            }else if(balance == 2 && balanceF(current_node->left) == 0){
+                //case 1C
+                current_node = LLrotate(current_node);
+            }else if(balance == -2 && balanceF(current_node->right) == -1){
+                //case 2A
+                current_node = RRrotate(current_node);
+            }else if(balance == -2 && balanceF(current_node->right) == 1){
+                //case 2B
+                current_node = RLrotate(current_node);
+            }else if(balance == -2 && balanceF(current_node->right) == 0){
+                //case 2C
+                current_node = RRrotate(current_node);
             }
-            
         }
 
-        void inOrder(Node<T> *node){
-          	if(node){
-				this->inOrder(node->left); 
-				cout << node->key << " "; 
-				this->inOrder(node->right);
-         	}
-        }
-
+        //O(log n)
         Node<T>* search(Node<T> *Node,int key){
             if(Node == NULL){
                 return NULL;
@@ -102,6 +115,7 @@ template <class T> class BinarySearchTree {
             }
         }
 
+        //get height of subtree
         int height(Node<T> *node){
             if(!node) return 0;
             int leftH = height(node->left);
@@ -110,29 +124,64 @@ template <class T> class BinarySearchTree {
             return max(leftH, rightH)+1;
         }
 
+        //calculate balance factor
         int balanceF(Node<T> *node){
             if(!node) return 0;
             return height(node->left) - height(node->right);
         }
 
-        Node<T> *leftRotate(Node<T> *n1){
-            Node<T> *n2 = n1->right;
-            Node<T> *temp = n2->left;
-
-            n2->left = n1;
-            n1->right = temp;
+        Node<T> *LLrotate(Node<T> *n1){
+            Node<T> *n2 = n1->left;
+            n1->left = n2->right;
+            n2->right = n1;
 
             return n2;
         }
 
-        Node<T> *rightRotate(Node<T> *n1){
-            Node<T> *n2 = n1->left;
-            Node<T> *temp = n2->right;
-
-            n2->right = n1;
-            n1->left = temp;
+        Node<T> *RRrotate(Node<T> *n1){
+            Node<T> *n2 = n1->right;
+            n1->right = n2->left;
+            n2->left = n1;
 
             return n2;
+        }
+
+        Node<T> *RLrotate(Node<T> *n1){
+            //right node
+            Node<T> *n2 = n1->right;
+            //right-left node
+            Node<T> *n3 = n2->left;
+
+            n1->right = n2->right;
+            n3->right = n2;
+            n2->left = n1->left;
+            n3->left = n1;
+            /*n2->left = n3->right;
+            n3->right = n2;
+
+            n1->right = n3->left;
+            n3->left = n1;*/
+
+            return n3;
+        }
+
+        Node<T> *LRrotate(Node<T> *n1){
+            //left node
+            Node<T> *n2 = n1->left;
+            //left-right node
+            Node<T> *n3 = n2->right;
+
+            n1->left = n2->left;
+            n3->left = n2;
+            n2->right = n1->right;
+            n3->right = n1;
+            /*n2->right = n3->left;
+            n3->left = n2;
+
+            n1->left = n3->right;
+            n3->right = n1;*/
+
+            return n3;
         }
         
         void showTree(Node<T> *tree, int count){
@@ -141,14 +190,14 @@ template <class T> class BinarySearchTree {
             }else{
                 showTree(tree->right, count +1);
                 for(int i =0;i < count; i++){
-                    cout<<"   ";
+                    cout<<"     ";
                 }
                 cout<<tree->key<<endl;
                 showTree(tree->left, count +1);
             }
         }
 
-            Node<T>* minimum_element(Node<T>* current_node){
+        Node<T>* minimum_element(Node<T>* current_node){
             //gets most left item
             if(!current_node->left){
                 return current_node;
@@ -156,6 +205,7 @@ template <class T> class BinarySearchTree {
             return minimum_element(current_node->left);
         }
 
+        //O(log n)
         Node<T>* deleteNode(Node<T> *&current_node,int key_delete){
 
             if(!current_node) return NULL;
@@ -207,14 +257,69 @@ template <class T> class BinarySearchTree {
                     current_node->right = this->deleteNode(current_node->right, successor->key);
                 }
             }
-            rotation(current_node);
+            //AVL properties
+            rotationDelete(current_node);
             return current_node;    
         }
 };
 
 int main(){
+    int node = 0;
+    AVLTree<int> a;
+    vector<int>numeros(9,0);
+
+    generate(numeros.begin(),numeros.end(),[]() {
+            return (rand() % 100)+1;
+    });
+
+    for(int i = 0; i < 9; i++){
+        a.insert(a.root,i+1,numeros[i]);
+        a.showTree(a.root,0);
+        cout<<"\n\n";
+    }
+    a.insert(a.root,11,55);
+
+    a.deleteNode(a.root,25);
+    a.deleteNode(a.root,35);
+    a.deleteNode(a.root,1);
+    a.showTree(a.root,0);
+    cout<<"\n\n";
+    //a.insert(a.root,11,55);
+    //a.showTree(a.root,0);
 
 
+    /*a.insert(a.root,1,4);
+    a.insert(a.root,2,5);
+    a.insert(a.root,3,6);
+    a.insert(a.root,4,7);
+    a.insert(a.root,5,8);
+    a.insert(a.root,6,9);
 
+    cout<<"ingrese un nodo: ";
+    cin>>node;
+    a.insert(a.root,7,node);
+    a.insert(a.root,8,11);
+    a.insert(a.root,9,12);
+    a.insert(a.root,9,13);
+    a.insert(a.root,9,14);
+    a.insert(a.root,9,15);
+    a.insert(a.root,9,2);
+    a.insert(a.root,9,1);*/
+
+
+    /*a.insert(a.root,0,4);
+    a.insert(a.root,0,5);
+    a.insert(a.root,0,6);
+    a.insert(a.root,0,7);
+    a.insert(a.root,0,8);
+    a.insert(a.root,0,9);
+
+    cout<<"\n";
+    
+    a.deleteNode(a.root,8);
+    a.deleteNode(a.root,5);
+    a.deleteNode(a.root,9);
+    a.showTree(a.root,0);*/
     return 0;
+
 }
