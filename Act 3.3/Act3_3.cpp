@@ -2,12 +2,13 @@
 Programa que implementa las funcion de un arbol avl
 
 Autor: Ruy Guzmán Camacho A01639912
-Entrega: 22/10/2021
+Entrega: 25/10/2021
 */
 
 #include <iostream>
 #include <queue> 
 #include <algorithm>  
+#include <time.h>
 
 using namespace std;
 
@@ -58,7 +59,6 @@ template <class T> class AVLTree {
 
             //AVL properties
             rotation(current_node);
-            
         }
 
         //AVL properties for insert function
@@ -120,7 +120,7 @@ template <class T> class AVLTree {
             if(!node) return 0;
             int leftH = height(node->left);
             int rightH = height(node->right);
-
+            //height of the node is the max between left subtree's and right subtree's height +1
             return max(leftH, rightH)+1;
         }
 
@@ -130,73 +130,84 @@ template <class T> class AVLTree {
             return height(node->left) - height(node->right);
         }
 
+        //left-left rotation
         Node<T> *LLrotate(Node<T> *n1){
+            //left node
             Node<T> *n2 = n1->left;
+            
+            //separates n1 and n2 since n2->right is NUll
             n1->left = n2->right;
+            //sets n1 as n2's right
             n2->right = n1;
 
             return n2;
         }
 
+        //right-right rotation
         Node<T> *RRrotate(Node<T> *n1){
+            //right node
             Node<T> *n2 = n1->right;
+            //separates n1 and n2 since n2->left is NUll
             n1->right = n2->left;
+            //sets n1 as n2's left
             n2->left = n1;
 
             return n2;
         }
 
+        //right-left rotation
         Node<T> *RLrotate(Node<T> *n1){
             //right node
             Node<T> *n2 = n1->right;
             //right-left node
             Node<T> *n3 = n2->left;
 
-            n1->right = n2->right;
-            n3->right = n2;
-            n2->left = n1->left;
-            n3->left = n1;
-            /*n2->left = n3->right;
-            n3->right = n2;
-
+            //separates n2 and n3 since n3->right is NUll
+            n2->left = n3->right;
+            //sets n3 as n1's right
             n1->right = n3->left;
-            n3->left = n1;*/
+            //sets n2 as n3's left
+            n3->right = n2;
+            //sets n1 as n3's right, n3 becomes new root
+            n3->left = n1;
 
             return n3;
         }
 
+        //left-right rotation
         Node<T> *LRrotate(Node<T> *n1){
             //left node
             Node<T> *n2 = n1->left;
             //left-right node
             Node<T> *n3 = n2->right;
-
-            n1->left = n2->left;
-            n3->left = n2;
-            n2->right = n1->right;
-            n3->right = n1;
-            /*n2->right = n3->left;
-            n3->left = n2;
-
+            
+            //separates n2 and n3 since n3->left is NUll
+            n2->right = n3->left;
+            //sets n3 as n1's left
             n1->left = n3->right;
-            n3->right = n1;*/
+            //sets n3's left as n2
+            n3->left = n2;
+            //sets n3's right as n2, n3 becomes new root
+            n3->right = n1;
 
             return n3;
         }
         
+        //shows tree horizontaly
         void showTree(Node<T> *tree, int count){
             if (tree == NULL){
                 return;
             }else{
                 showTree(tree->right, count +1);
                 for(int i =0;i < count; i++){
-                    cout<<"     ";
+                    cout<<"       ";
                 }
                 cout<<tree->key<<endl;
                 showTree(tree->left, count +1);
             }
         }
 
+        //auxiliary function for deleteNode
         Node<T>* minimum_element(Node<T>* current_node){
             //gets most left item
             if(!current_node->left){
@@ -206,7 +217,7 @@ template <class T> class AVLTree {
         }
 
         //O(log n)
-        Node<T>* deleteNode(Node<T> *&current_node,int key_delete){
+        Node<T>* deleteNode(Node<T> *current_node,int key_delete){
 
             if(!current_node) return NULL;
             // First search for the element to delete
@@ -264,9 +275,12 @@ template <class T> class AVLTree {
 };
 
 int main(){
-    int node = 0;
+    int key = 0;
+    char op = 's';
+    int count = 10;
     AVLTree<int> a;
     vector<int>numeros(9,0);
+    srand(time(0));
 
     generate(numeros.begin(),numeros.end(),[]() {
             return (rand() % 100)+1;
@@ -274,52 +288,50 @@ int main(){
 
     for(int i = 0; i < 9; i++){
         a.insert(a.root,i+1,numeros[i]);
-        a.showTree(a.root,0);
-        cout<<"\n\n";
     }
-    a.insert(a.root,11,55);
 
-    a.deleteNode(a.root,25);
-    a.deleteNode(a.root,35);
-    a.deleteNode(a.root,1);
+    cout<<"\nArbol generado aleatoriamente\n"<<endl;
     a.showTree(a.root,0);
     cout<<"\n\n";
-    //a.insert(a.root,11,55);
-    //a.showTree(a.root,0);
 
+    while(op == 's'){
+        cout<<"Desea insertar un nodo? (s/n): ";
+        cin>>op;
+        if(op == 's'){
+            cout<<"Ingrese la llave del nodo a insertar: ";
+            cin>>key;
+            count ++;
+            a.insert(a.root,count,key);
 
-    /*a.insert(a.root,1,4);
-    a.insert(a.root,2,5);
-    a.insert(a.root,3,6);
-    a.insert(a.root,4,7);
-    a.insert(a.root,5,8);
-    a.insert(a.root,6,9);
+            cout<<"Nuevo arbol\n"<<endl;
+            a.showTree(a.root,0);
+        }
 
-    cout<<"ingrese un nodo: ";
-    cin>>node;
-    a.insert(a.root,7,node);
-    a.insert(a.root,8,11);
-    a.insert(a.root,9,12);
-    a.insert(a.root,9,13);
-    a.insert(a.root,9,14);
-    a.insert(a.root,9,15);
-    a.insert(a.root,9,2);
-    a.insert(a.root,9,1);*/
+        cout<<"Desea borrar un nodo? (s/n): ";
+        cin>>op;
+        if(op == 's'){
+            cout<<"Ingrese la llave del nodo a borrar: ";
+            cin>>key;
+            a.root = a.deleteNode(a.root,key);
+            cout<<"Arbol despues de borrar el nodo: \n"<<endl;
+            a.showTree(a.root,0);
+        }
+        cout<<"Desea buscar un nodo? (s/n): ";
+        cin>>op;
+        if(op == 's'){
+            cout<<"Ingrese la llave del nodo a buscar: ";
+            cin>>key;
+            Node<int> *search_node = a.search(a.root,key);
+            if(search_node){
+                cout<<"El nodo con la llave "<<search_node->key<< " existe y contiene el dato: "<<search_node->data<<endl;
+            }else{
+                cout<<"No existe un nodo con esa llave"<<endl;
+            }
+        }
 
-
-    /*a.insert(a.root,0,4);
-    a.insert(a.root,0,5);
-    a.insert(a.root,0,6);
-    a.insert(a.root,0,7);
-    a.insert(a.root,0,8);
-    a.insert(a.root,0,9);
-
-    cout<<"\n";
-    
-    a.deleteNode(a.root,8);
-    a.deleteNode(a.root,5);
-    a.deleteNode(a.root,9);
-    a.showTree(a.root,0);*/
+        cout<<"Desea continuar? (s/n): ";
+        cin>>op;
+    }
     return 0;
 
 }
