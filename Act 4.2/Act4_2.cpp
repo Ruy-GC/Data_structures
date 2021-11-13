@@ -4,6 +4,7 @@
 #include <fstream>
 #include <utility>     
 #include <algorithm>
+#include <list>
 using namespace std;
 
 template <class T> class Node {
@@ -75,34 +76,43 @@ template <class T> class Graph{
             matrix[iFrom][iTo] = 1;
         }
 
-        void updateEdgeList(Node<T>*from, Node<T>* to, vector<pair<Node<T>*,Node<T>*>> &edgeList){
+        /*void updateEdgeList(Node<T>*from, Node<T>* to, vector<pair<Node<T>*,Node<T>*>> &edgeList){
             int iFrom = findNode(from);
             int iTo = findNode(to);  
             edgeList.push_back(make_pair(nodes[iFrom],nodes[iTo])); 
-        }
+        }*/
 
-        void loadGraph(int n, int m,vector<pair<Node<T>*,Node<T>*>> &edgeList){
-            vector<pair<string,string>> pairs = readfile();
+        void loadGraph(int n, int m,list<Node<int> *> &adyacencia){
+            for(int i = 0; i < n; i++){
+                Node<T> *new_node = new Node<T>(i+1);
+                nodes.push_back(new_node);
+            }
+
+
+
+            /*vector<pair<string,string>> pairs = readfile();
             
             for(auto &pair : pairs){
 
-                if(nodes.size() < n || edgeList.size() < m){
-                    Node<T> *new_node1 = new Node<T>(get<0>(pair));
-                    Node<T> *new_node2 = new Node<T>(get<1>(pair));
-                    updateMatriz(new_node1,new_node2);
+                if(edgeList.size() < m){
+                    if(nodes.size() < n){
+                        Node<T> *new_node1 = new Node<T>(get<0>(pair));
+                        Node<T> *new_node2 = new Node<T>(get<1>(pair));
+                        updateMatriz(new_node1,new_node2);
 
-                    int iFrom = findNode(new_node1);
-                    int iTo = findNode(new_node2);  
-                    edgeList.push_back(make_pair(nodes[iFrom],nodes[iTo])); 
+                        int iFrom = findNode(new_node1);
+                        int iTo = findNode(new_node2);  
+                        edgeList.push_back(make_pair(nodes[iFrom],nodes[iTo])); 
+                    }
                 }
                 
-            }
+            }*/
             cout<<"\n";
         }
 
-        bool isTree(int n, int m,vector<pair<Node<T>*,Node<T>*>> &edgeList){
+        bool isTree(int n, int m,list<Node<int> *> &edgeList){
             vector<Node<T>*> visitados;
-            visitados.push_back(get<0>(edgeList[0]));
+            /*visitados.push_back(get<0>(edgeList[0]));
             visitados.push_back(get<1>(edgeList[0]));
 
             for(int i = 2; i < edgeList.size();i++){
@@ -111,11 +121,11 @@ template <class T> class Graph{
                 }else{
                     visitados.push_back(get<1>(edgeList[i]));
                 }
-            }
+            }*/
             return true;
         }
 
-        vector<pair<string, string>> readfile(){
+        /*vector<pair<string, string>> readfile(){
             string filename("input.txt");
             string line;
             string data[2];
@@ -134,23 +144,50 @@ template <class T> class Graph{
                 }
             }
             return pairs;
-        }
+        }*/
 };
 
+int cantidadArcos(vector<int> adyacencia[],int V){
+    int m = 0;
+    
+    for(int v = 0; v < V; ++v){
+        for (auto x : adyacencia[v]){
+            m++;
+        }
+    }
+    return m;
+}
+
+
 int main(){
-    Graph<string> Test;
-    vector<pair<Node<string> *, Node<string> *>> edgeList;
-    Test.loadGraph(10, 10,edgeList);
-    Test.printMatrix();
+    Graph<int> Test;
+    //vector<pair<Node<string> *, Node<string> *>> edgeList;
+    static const int n = 3;
+    vector<int> adyacencia[n];
+    adyacencia[0].push_back(1);
+    adyacencia[1].push_back(2);
+    adyacencia[1].push_back(0);
+
+    for (int v = 0; v < n; ++v){
+        cout << v ;
+        for (auto x : adyacencia[v])
+           cout << "-> " << x;
+        printf("\n");
+    }
+
+    cout<<"nodos: "<<n<<endl;
+    cout<<"arcos: "<<cantidadArcos(adyacencia,3)<<endl;
+    //Test.loadGraph(4, 3,adyacencia);
+    /*Test.printMatrix();
 
     for(auto &pair : edgeList){
         cout<<"("<<get<0>(pair)->data<<","<<get<1>(pair)->data<<")";
-    }
+    }*/
 
-    if(Test.isTree(10,10,edgeList)){
+    /*if(Test.isTree(10,10,adyacencia)){
         cout<<"\nEs un arbol"<<endl;
     }else{
         cout<<"\nNo es un arbol"<<endl;
-    }
+    }*/
     return 0;
 }
