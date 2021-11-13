@@ -82,7 +82,7 @@ template <class T> class Graph{
             edgeList.push_back(make_pair(nodes[iFrom],nodes[iTo])); 
         }*/
 
-        void loadGraph(int n, int m,list<Node<int> *> &adyacencia){
+        void loadGraph(int n, int m,vector<int> adyacencia[]){
             for(int i = 0; i < n; i++){
                 Node<T> *new_node = new Node<T>(i+1);
                 nodes.push_back(new_node);
@@ -177,6 +177,10 @@ int main(){
 
     cout<<"nodos: "<<n<<endl;
     cout<<"arcos: "<<cantidadArcos(adyacencia,3)<<endl;
+
+    Test.loadGraph(n,cantidadArcos(adyacencia,n), adyacencia);
+    cout<<"Grafo Generado: "<<endl;
+    Test.printMatrix();
     //Test.loadGraph(4, 3,adyacencia);
     /*Test.printMatrix();
 
