@@ -9,7 +9,7 @@ using namespace std;
 
 template <class T> class Node {
     public:
-        T data; 
+        T data;
 
         Node(T new_data){
           	this->data = new_data;
@@ -60,6 +60,7 @@ template <class T> class Graph{
             }
 
             if(iTo == -1){
+                if(to->data == -1) return;
                 nodes.push_back(to);
 
                 vector<int> newRow = vector<int>(nodes.size(),0);
@@ -76,37 +77,26 @@ template <class T> class Graph{
             matrix[iFrom][iTo] = 1;
         }
 
-        /*void updateEdgeList(Node<T>*from, Node<T>* to, vector<pair<Node<T>*,Node<T>*>> &edgeList){
-            int iFrom = findNode(from);
-            int iTo = findNode(to);  
-            edgeList.push_back(make_pair(nodes[iFrom],nodes[iTo])); 
-        }*/
-
-        void loadGraph(int n, int m,vector<int> adyacencia[]){
+        void loadGraph(int n, int m,vector<vector<int>> &adyacencia){
+            int x = 0;
+            int arcos =0;
             for(int i = 0; i < n; i++){
-                Node<T> *new_node = new Node<T>(i+1);
-                nodes.push_back(new_node);
-            }
+                if(adyacencia[i].size() == 1){
+                    Node<T> *new_node1 = new Node<T>(adyacencia[i][0]);
+                    Node<T> *new_node2 = new Node<T>(-1);
+                    updateMatriz(new_node1,new_node2);
 
-
-
-            /*vector<pair<string,string>> pairs = readfile();
-            
-            for(auto &pair : pairs){
-
-                if(edgeList.size() < m){
-                    if(nodes.size() < n){
-                        Node<T> *new_node1 = new Node<T>(get<0>(pair));
-                        Node<T> *new_node2 = new Node<T>(get<1>(pair));
-                        updateMatriz(new_node1,new_node2);
-
-                        int iFrom = findNode(new_node1);
-                        int iTo = findNode(new_node2);  
-                        edgeList.push_back(make_pair(nodes[iFrom],nodes[iTo])); 
+                }else{
+                    x = 1;
+                    while(x <= adyacencia[i].size()-1 && arcos < m){
+                        Node<T> *new_node = new Node<T>(adyacencia[i][0]);
+                        Node<T> *new_node2 = new Node<T>(adyacencia[i][x]);
+                        updateMatriz(new_node, new_node2);
+                        x++;
+                        arcos++;
                     }
                 }
-                
-            }*/
+            }
             cout<<"\n";
         }
 
@@ -147,13 +137,11 @@ template <class T> class Graph{
         }*/
 };
 
-int cantidadArcos(vector<int> adyacencia[],int V){
+int cantidadArcos(vector<vector<int>> adyacencia,int V){
     int m = 0;
     
-    for(int v = 0; v < V; ++v){
-        for (auto x : adyacencia[v]){
-            m++;
-        }
+    for (int v = 0; v < V; ++v){
+        m += adyacencia[v].size() -1;
     }
     return m;
 }
@@ -163,30 +151,23 @@ int main(){
     Graph<int> Test;
     //vector<pair<Node<string> *, Node<string> *>> edgeList;
     static const int n = 3;
-    vector<int> adyacencia[n];
-    adyacencia[0].push_back(1);
-    adyacencia[1].push_back(2);
-    adyacencia[1].push_back(0);
+    vector<vector<int>> adyacencia;
+    adyacencia.push_back({0});
+    adyacencia.push_back({1,0,2});
+    adyacencia.push_back({2,1,0});
 
     for (int v = 0; v < n; ++v){
-        cout << v ;
         for (auto x : adyacencia[v])
-           cout << "-> " << x;
+           cout << x << "-> ";
         printf("\n");
     }
 
-    cout<<"nodos: "<<n<<endl;
-    cout<<"arcos: "<<cantidadArcos(adyacencia,3)<<endl;
+    cout<<"\nnodos: "<<n<<endl;
+    cout<<"arcos: "<<cantidadArcos(adyacencia,adyacencia.size())<<endl;
 
     Test.loadGraph(n,cantidadArcos(adyacencia,n), adyacencia);
     cout<<"Grafo Generado: "<<endl;
     Test.printMatrix();
-    //Test.loadGraph(4, 3,adyacencia);
-    /*Test.printMatrix();
-
-    for(auto &pair : edgeList){
-        cout<<"("<<get<0>(pair)->data<<","<<get<1>(pair)->data<<")";
-    }*/
 
     /*if(Test.isTree(10,10,adyacencia)){
         cout<<"\nEs un arbol"<<endl;
