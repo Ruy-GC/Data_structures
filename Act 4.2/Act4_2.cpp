@@ -20,10 +20,15 @@ template <class T> class Graph{
     private:
         vector<Node<T>*> nodes;
         vector<vector<int>> matrix;
-
+        vector<list<T>> listaAdj;
+        int n,m;
     public:
         Graph(){
 
+        }
+        
+        Graph(int n, int m, vector<list<T>> &listaAdj){
+            loadGraph(n,m,listaAdj);
         }
 
         void printMatrix(){
@@ -77,6 +82,7 @@ template <class T> class Graph{
             matrix[iFrom][iTo] = 1;
         }
 
+        //O(n log n) siendo n los nodos totales de la lista
         void loadGraph(int n, int m,vector<vector<int>> &adyacencia){
             int x = 0;
             int arcos =0;
@@ -88,53 +94,47 @@ template <class T> class Graph{
 
                 }else{
                     x = 1;
-                    while(x <= adyacencia[i].size()-1 && arcos < m){
+                    while(arcos < m){
                         Node<T> *new_node = new Node<T>(adyacencia[i][0]);
                         Node<T> *new_node2 = new Node<T>(adyacencia[i][x]);
                         updateMatriz(new_node, new_node2);
                         x++;
                         arcos++;
+                        if(x == adyacencia[i].size()) break;
                     }
                 }
             }
             cout<<"\n";
         }
 
-        bool isTree(int n, int m,list<Node<int> *> &edgeList){
-            vector<Node<T>*> visitados;
-            /*visitados.push_back(get<0>(edgeList[0]));
-            visitados.push_back(get<1>(edgeList[0]));
+        //O()
+        bool isTree(int n, int m,vector<vector<int>> adyacencia){
+            vector<T> visitados;
+            for(int i = 1; i < adyacencia[0].size();i++){
+                visitados.push_back(adyacencia[0][i]);
+            }
 
-            for(int i = 2; i < edgeList.size();i++){
-                if(find(visitados.begin(), visitados.end(), get<1>(edgeList[i])) != visitados.end() ){
-                    return false;
-                }else{
-                    visitados.push_back(get<1>(edgeList[i]));
+            int j = 1;
+            int arcos = 0;
+            for(int i = 1; i < n; i++){
+                j = 1;
+                if(adyacencia[i].size() != 1){
+                    while(arcos < m){
+                        if(find(visitados.begin(), visitados.end(),adyacencia[i][j]) != visitados.end()){
+                            return false;
+                        }else{
+                            visitados.push_back(adyacencia[i][j]);
+                            j++;
+                            arcos++;
+                            if(j == adyacencia[i].size()) break;
+                        }    
+                    }
                 }
-            }*/
+                
+                
+            }
             return true;
         }
-
-        /*vector<pair<string, string>> readfile(){
-            string filename("input.txt");
-            string line;
-            string data[2];
-            vector<pair<string,string>> pairs;
-
-            ifstream file(filename);
-
-            if(!file.is_open()){
-                cout<<"Archivo no encontrado"<<endl;
-            }else{
-                while(getline(file, line,',')){
-                    data[0] = line;
-                    getline(file,line);
-                    data[1] = line;
-                    pairs.push_back(make_pair(data[0],data[1]));
-                }
-            }
-            return pairs;
-        }*/
 };
 
 int cantidadArcos(vector<vector<int>> adyacencia,int V){
@@ -149,30 +149,29 @@ int cantidadArcos(vector<vector<int>> adyacencia,int V){
 
 int main(){
     Graph<int> Test;
-    //vector<pair<Node<string> *, Node<string> *>> edgeList;
-    static const int n = 3;
     vector<vector<int>> adyacencia;
-    adyacencia.push_back({0});
-    adyacencia.push_back({1,0,2});
-    adyacencia.push_back({2,1,0});
 
-    for (int v = 0; v < n; ++v){
+    adyacencia.push_back({0,1,2});
+    adyacencia.push_back({1,2});
+    adyacencia.push_back({2});
+
+    for (int v = 0; v < adyacencia.size(); ++v){
         for (auto x : adyacencia[v])
            cout << x << "-> ";
         printf("\n");
     }
 
-    cout<<"\nnodos: "<<n<<endl;
+    cout<<"\nnodos: "<<adyacencia.size()<<endl;
     cout<<"arcos: "<<cantidadArcos(adyacencia,adyacencia.size())<<endl;
 
-    Test.loadGraph(n,cantidadArcos(adyacencia,n), adyacencia);
+    Test.loadGraph(adyacencia.size(),cantidadArcos(adyacencia,adyacencia.size()), adyacencia);
     cout<<"Grafo Generado: "<<endl;
     Test.printMatrix();
 
-    /*if(Test.isTree(10,10,adyacencia)){
+    if(Test.isTree(adyacencia.size(),cantidadArcos(adyacencia,adyacencia.size()),adyacencia)){
         cout<<"\nEs un arbol"<<endl;
     }else{
         cout<<"\nNo es un arbol"<<endl;
-    }*/
+    }
     return 0;
 }
