@@ -24,12 +24,12 @@ template <class T> class Graph{
     private:
         vector<Node<T>*> nodes;
         vector<vector<int>> matrix;
-        vector<bool> recursive;
-        vector<bool> visited;
+
     public:
         Graph(){
 
         }
+        
         //Imprime matriz de adyacencia
         void printMatrix(){
             for(auto &node : nodes){
