@@ -8,65 +8,37 @@
 using namespace std;
 
 template <class T> class Hash {
-    public:
+    private:
         int buckets;
         int qbuckets;
+        bool fail;
         vector<list<pair<int,T>>> chainHashTable;
-        vector<vector<pair<int,T>>> quadHashTable;
-
-        //bool isInt;
-
-        Hash(int buckets){
-            this->buckets = buckets;
-            this->qbuckets = buckets;
-            for(int i = 0; i < buckets; i++){
-                list<pair<int,T>> temp;
-                chainHashTable.push_back(temp);
-            }
-
-            vector<pair<int,T>> new_row(buckets);
-            quadHashTable.push_back(new_row);
-        }
+        vector<pair<int,T>> quadHashTable;
 
         //O(1) calcula la llave para el valor
         int hashFunction(int key){
             return key % buckets;
         }
 
-        int quadraticFunction(int n){
-            if(qbuckets != 0 && ((qbuckets & qbuckets-1)== 0)){
-                return (pow(n,2)+n)/2;
-
-            }else{
-                bool primo = true;;
-                for(int i = 2; i < qbuckets; i++){
-                    if(qbuckets % i == 0)
-                        primo = false;
-                }
-                if(primo) return pow(n,2);
-            }
-            return -1;
-        }
-
+        //Mejor: O(1) si no hay colisión
+        //Promedio: O(log n) en caso de colisión,  n siendo los espacios de la tabla
+        //Peor: O(n) 
         void quadratic(int key, T item){
-            int limit = log2(qbuckets);
-            bool colision = false;
-
             int H = hashFunction(key);
-            int P = quadraticFunction(0);
-            
-            if(quadHashTable.size() == 1){
-
+            for(int j = 0; j<qbuckets;j++){
+                int index = (H + (j*j)) % qbuckets;
+                if(quadHashTable[index].first == -1 || quadHashTable[index].first == key){
+                    quadHashTable[index] = make_pair(key,item);
+                    fail = false;
+                    break;
+                }
+                fail = true;
             }
-
-            while(colision){
-                while(P < limit){
-                    P = quadraticFunction(0);
-                }  
-            }
+            if(fail) resizeQuad();  
         }
 
-        //O(1)
+        //Mejor: O(1) si no hay colisión
+        //Promedio: O(L) en caso de colisión, donde L es la longitud de la lista ligada en el espacio de la tabla
         void chain(int key, T item){
             pair<int,T> new_element (key,item);
             int index = hashFunction(key);
@@ -75,11 +47,57 @@ template <class T> class Hash {
             for(auto &itr: list){
                 if(itr.first == key){
                     itr.second = item;
-                    cout<<"Valor actualizado"<<endl;
                     return;
                 }
             }
             chainHashTable[index].push_back(new_element);
+        }
+
+        //función auxiliar de la prueba cuadrática, amplía la tabla hash
+        void resizeQuad(){
+            this->qbuckets *= 2;
+            quadHashTable.clear();
+             for(int i = 0; i < qbuckets; i++){
+                pair<int,T> new_item (-1,NULL);
+                quadHashTable.push_back(new_item);
+            }
+        }
+
+    public:
+        //cosntructor
+        Hash(int buckets){
+            this->buckets = buckets;
+            this->qbuckets = buckets;
+            this->fail = true;
+            for(int i = 0; i < buckets; i++){
+                list<pair<int,T>> temp;
+                chainHashTable.push_back(temp);
+                pair<int,T> new_item (-1,NULL);
+                quadHashTable.push_back(new_item);
+            }
+        }
+        
+        //O(n) siendo n la cantidad de  items a agregar
+        //función de prueba por encadenamiento para el usuario 
+        void chain(vector<pair<int,T>> items){
+            for(int i = 0; i < items.size();i++){
+                this->chain(items[i].first,items[i].second);
+            }
+        }
+
+        //Mejor: O(n) siendo n la cantidad de  items a agregar
+        //Peor: O(n^2) siendo n la cantidad de  items a agregar si se tiene que redimensionar la tabla
+        //función de prueba cuadratica para el usuario 
+        void quadratic(vector<pair<int,T>> items){
+            int i = 0;
+            while (i < items.size()){
+                this->quadratic(items[i].first,items[i].second);
+                if(fail){
+                    i = 0;
+                }else{
+                    i++;
+                }
+            }
         }
 
         //imprime la tabla hash con manejo de colisiones por encadenamiento
@@ -94,27 +112,30 @@ template <class T> class Hash {
             }
         }
 
-        void prinQuad(){
+        //imprime la tabla hash con manejo de colisiones por prueba cuadrática
+        void printQuad(){
             cout<<"(key,data)"<<endl;
-            for(int i = 0; i < quadHashTable.size(); i++){
-                for(int j = 0; j < buckets; j++){
-                    cout<<"("<<quadHashTable[i][j].first<<","<<quadHashTable[i][j].second<<") ";
-                }
-                cout<<"\n";
+            for(int i = 0; i < qbuckets; i++){
+                cout<<"("<<quadHashTable[i].first<<","<<quadHashTable[i].second<<") ";
             }
+            cout<<"\n";
         }
 
 };
 
 int main(){
-    Hash<int> Test (5);
-    Test.chain(10,25);
-    Test.chain(15,26);
-    Test.chain(5,27);
-    Test.chain(13,1);
-    Test.chain(18,2);
-    Test.chain(8,23);
+    Hash<int> Test (4);
+    vector<pair<int,int>> items;
+    items.push_back(make_pair(10,25));
+    items.push_back(make_pair(15,26));
+    items.push_back(make_pair(5,27));
+    items.push_back(make_pair(13,1));
+    items.push_back(make_pair(18,2));
+    items.push_back(make_pair(8,3));
+
+    Test.chain(items);
+    Test.quadratic(items);
     
     Test.printChain();
-    Test.prinQuad();
+    Test.printQuad();
 }
