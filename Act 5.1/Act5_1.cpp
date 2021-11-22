@@ -26,60 +26,69 @@ template <class T> class Hash {
             return key % buckets;
         }
 
-        //Mejor: O(1) si no hay colisión
-        //Promedio: O(log n) en caso de colisión,  n siendo los espacios de la tabla
-        //Peor: O(n) en caso de que no se pueda insertar el elemento en la tabla o que tenga iterar n(tamaño de la tabla) veces para ubicarlo
+        //O(1) si no hay colisión
+        //O(log n) en caso de colisión,  n siendo los espacios de la tabla
+        //O(n) en caso de que no se pueda insertar el elemento en la tabla o que tenga iterar n(tamaño de la tabla) veces para ubicarlo
         void quadratic(int key, T item){
             int H = hashFunction(key);
             for(int j = 0; j<qbuckets;j++){
+                //prueba cuadrática i representa los intentos de ubicar el elemento
                 int index = (H + (j*j)) % qbuckets;
-                /*if(index > qbuckets-1){
 
-                }*/
-
+                //si el espacio está vacio o la llave es igual a la ingresada
                 if(quadHashTable[index].first == -1 || quadHashTable[index].first == key){
                     quadHashTable[index] = make_pair(key,item);
+                    //se logró ubicar el dato, no requiere redimensionamiento
                     fail = false;
                     break;
                 }
+                //si no se logró ubicar el item se hace verdadero para poder redimensionar la tabla
                 fail = true;
             }
-            //if(fail) resizeQuad();  
         }
 
-        //Mejor: O(1) si no hay colisión
-        //Promedio: O(L) en caso de colisión, donde L es la longitud de la lista ligada en indice obtenido por el hashing
+        //O(1) si no hay colisión
+        //O(L) en caso de colisión, donde L es la longitud de la lista ligada en indice obtenido por el hashing
         void chain(int key, T item){
             pair<int,T> new_element (key,item);
             int index = hashFunction(key);
+            
+            //obtiene la lista en el indice generado por la función hash
             auto &list = chainHashTable[index];
             
+            //si la llave ya existe dentro de la tabla ctualiza el valor
             for(auto &itr: list){
                 if(itr.first == key){
                     itr.second = item;
                     return;
                 }
             }
+
+            //añade el item a la lista liogada en el indice
             chainHashTable[index].push_back(new_element);
         }
 
         //función auxiliar de la prueba cuadrática, amplía la tabla hash y devuelve los valores que ya estaban dentor para su reubicación
         vector<pair<int,T>> resizeQuad(){
             vector<pair<int,T>> items;
+            //obtiene los datos ya ingresados en la tabla para reubicarlos
             for(int i = 0; i< qbuckets; i++){
                 if(quadHashTable[i].first != -1 ){
                     items.push_back(quadHashTable[i]);
                 }
             }
 
+            //aumenta el tamaño 2x + 1 donde x es el tamaño actual
             this->qbuckets = (qbuckets * 2) + 1;
 
+            //limpia y redimensiona la tabla
             quadHashTable.clear();
             for(int i = 0; i < qbuckets; i++){
                 pair<int,T> new_item (-1,NULL);
                 quadHashTable.push_back(new_item);
             }
 
+            //devuelve los datos lamcenados
             return items;
         }
 
@@ -112,13 +121,19 @@ template <class T> class Hash {
             while (i < items.size()){
                 this->quadratic(items[i].first,items[i].second);
                 if(fail){
-
                     vector<pair<int,T>> new_items;
+                    /*obtiene los datos de la tabla y redimensiona
+                    obtener estos datos es necesario para reubicarlos dentro de la tabla
+                    esto debe hacerse debido a que puede insertar elementos a una tabla que
+                    no esté vacia*/
                     vector<pair<int,T>> prev_items = resizeQuad();
                     new_items.reserve(items.size() + prev_items.size());
+
+                    //los añade junto a los que van a ingresar
                     new_items.insert(new_items.end(),prev_items.begin(),prev_items.end());
                     new_items.insert(new_items.end(),items.begin(),items.end());
                     items = new_items;
+                    //reinicia la inserción a la tabla
                     i = 0;
                 }else{
                     i++;
@@ -164,11 +179,9 @@ int main(){
         while (key != -1){
             cout<<"Llave "<<item<<": ";
             cin>>key;
-
             if(key != -1){
                 items.push_back(make_pair(key,item));
             }
-                
             item++;
         }
 
@@ -181,9 +194,7 @@ int main(){
         Table.quadratic(items);
         Table.printQuad();
         cout<<"\n";
-
         system("pause");
     }
-
     return 0;
 }
